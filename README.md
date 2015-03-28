@@ -3,7 +3,7 @@ OAuth2 Authorization Server based on Spring Security OAuth2
 
 This is the basic Authorization server based on Spring Security OAuth2.
 
-The main goal is to show you how to implement an Authorization Server with a Couchbase Server token service provider.
+The main goal is to show you how to implement an Authorization Server with Spring Security OAuth2.
 
 How to use it ?
 ==============================
@@ -11,7 +11,7 @@ How to use it ?
 Checkout the OAuth2 Authorization Server :
 
 <pre>
-- git clone https://github.com/tcompiegne/oauth2-server-spring-couchbase.git
+- git clone https://github.com/tcompiegne/oauth2-server.git
 - mvn install
 </pre>
 
@@ -78,7 +78,7 @@ Response Body   ::
 
 =============== =================================================
 
-Authorization Code(response type : code) Flow :
+Authorization Code (response type : code) Flow :
 
 =============== =================================================
 
@@ -107,7 +107,7 @@ Response Body   ::
 				 
 =============== =================================================
 
-Authorization Code(response type : token) Flow :
+Authorization Code (response type : token) Flow :
 
 =============== =================================================
 
@@ -119,7 +119,7 @@ Redirect to 	http://localhost:8080/yourapp#access_token=7ad8f410-d9d4-4106-b8c2-
 
 </pre>
 
-OAuth2 Token Validation Service (POST /oauth/check_token)
+OAuth2 Token Validation Service
 ===================================
 
 An endpoint that allows a resource server to validate an access token. The application client is authenticated via basic auth for this call.
