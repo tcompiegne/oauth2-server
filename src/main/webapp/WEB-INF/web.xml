@@ -18,6 +18,17 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     
+    <!-- Cors -->
+    <filter>
+    	<filter-name>CorsFilter</filter-name>
+    	<filter-class>com.tce.spring.oauth2.filters.CorsFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+    	<filter-name>CorsFilter</filter-name>
+    	<url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
     <!-- Spring Security -->
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
