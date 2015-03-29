@@ -88,9 +88,10 @@
         <access-denied-handler ref="oauthAccessDeniedHandler" />
     </http>
 	
-	<http auto-config="true" xmlns="http://www.springframework.org/schema/security">
-	   	<intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-    	<intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+	<http auto-config="false" xmlns="http://www.springframework.org/schema/security">
+	  <intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+    <intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    <intercept-url pattern="/logout" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/oauth/check_token" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/oauth/**" access="ROLE_USER" />
 		<intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -98,8 +99,26 @@
 		    login-page="/login" 
 		    default-target-url="/"
 			authentication-failure-url="/login?error" />
-		<sec:logout logout-success-url="/login?logout" />
+		<custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
 	</http>
+	
+	<bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+		<constructor-arg name="logoutSuccessHandler" ref="logoutSuccessHandler" />
+		<constructor-arg name="handlers">
+			<list>
+				<ref bean="securityContextLogoutHandler" />
+			</list>			
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/logout" />
+	</bean>
+
+	<bean id="logoutSuccessHandler" class="com.tce.spring.oauth2.handlers.CustomLogoutSuccessHandler">
+		<property name="defaultTargetUrl" value="/login?logout"	/>
+	</bean>
+	
+	<bean id="securityContextLogoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
+    <property name="invalidateHttpSession" value="true"/>
+	</bean>
 	
 	<!-- Client authentication to authenticate oauth2 application clients (define via clientDetails bean) -->
 	<authentication-manager id="clientAuthenticationManager" xmlns="http://www.springframework.org/schema/security">
