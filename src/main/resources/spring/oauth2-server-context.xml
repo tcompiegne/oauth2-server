@@ -91,7 +91,7 @@
     
     <!-- Userinfo endpoint (oauth protected resource) -->
     <http name="userInfoSecurity" pattern="/userinfo" create-session="stateless" authentication-manager-ref="emptyAuthenticationManager"
-		entry-point-ref="oauthAuthenticationEntryPoint" access-decision-manager-ref="accessDecisionManager"
+		entry-point-ref="clientAuthenticationEntryPoint" access-decision-manager-ref="accessDecisionManager"
 		xmlns="http://www.springframework.org/schema/security">
 		<intercept-url pattern="/**" access="scope=openid" />
 		<custom-filter ref="openidResourceAuthenticationFilter" position="PRE_AUTH_FILTER" />
@@ -99,7 +99,7 @@
 	</http>
 		
 	<oauth:resource-server id="openidResourceAuthenticationFilter" token-services-ref="tokenServices"
-		resource-id="openid" entry-point-ref="oauthAuthenticationEntryPoint" />
+		resource-id="openid" entry-point-ref="clientAuthenticationEntryPoint" />
     
 	<http auto-config="false" xmlns="http://www.springframework.org/schema/security">
 	  	<intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
@@ -173,5 +173,17 @@
 	<bean id="checkTokenEndPoint" class="org.springframework.security.oauth2.provider.endpoint.CheckTokenEndpoint">
 		<constructor-arg ref="tokenServices" />
 	</bean>
+	
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased">
+      <constructor-arg>
+          <list>
+              <bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter">
+                  <property name="scopePrefix" value="scope=" />
+              </bean>
+              <bean class="org.springframework.security.access.vote.RoleVoter" />
+              <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+          </list>
+      </constructor-arg>
+  </bean>
 	
 </beans>
