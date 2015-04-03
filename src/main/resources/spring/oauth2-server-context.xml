@@ -44,7 +44,7 @@
 	
 	<!-- Application clients -->
 	<oauth:client-details-service id="clientDetails">
-		<oauth:client client-id="test" secret="test" authorized-grant-types="client_credentials,password,authorization_code,refresh_token,implicit" authorities="ROLE_CLIENT" scope="read,write" autoapprove="true" />
+		<oauth:client client-id="test" secret="test" authorized-grant-types="client_credentials,password,authorization_code,refresh_token,implicit" authorities="ROLE_CLIENT" scope="read,write,openid" resource-ids="openid" autoapprove="true" />
 		<oauth:client client-id="resource1" secret="resource1" authorized-grant-types="client_credentials" authorities="ROLE_RESOURCE_SERVER" scope="read,write"  autoapprove="true" />
 	</oauth:client-details-service>
 	
@@ -79,6 +79,7 @@
 		<access-denied-handler ref="oauthAccessDeniedHandler" />
 	</http>
 	
+	<!-- Token validation endpoint -->
 	<http name="checkTokenSecurity" pattern="/oauth/check_token" create-session="stateless" entry-point-ref="clientAuthenticationEntryPoint"
         authentication-manager-ref="clientAuthenticationManager" use-expressions="true"
         xmlns="http://www.springframework.org/schema/security">
@@ -87,11 +88,23 @@
         <custom-filter ref="clientAuthenticationFilter" position="BASIC_AUTH_FILTER" />
         <access-denied-handler ref="oauthAccessDeniedHandler" />
     </http>
-	
+    
+    <!-- Userinfo endpoint (oauth protected resource) -->
+    <http name="userInfoSecurity" pattern="/userinfo" create-session="stateless" authentication-manager-ref="emptyAuthenticationManager"
+		entry-point-ref="oauthAuthenticationEntryPoint" access-decision-manager-ref="accessDecisionManager"
+		xmlns="http://www.springframework.org/schema/security">
+		<intercept-url pattern="/**" access="scope=openid" />
+		<custom-filter ref="openidResourceAuthenticationFilter" position="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+		
+	<oauth:resource-server id="openidResourceAuthenticationFilter" token-services-ref="tokenServices"
+		resource-id="openid" entry-point-ref="oauthAuthenticationEntryPoint" />
+    
 	<http auto-config="false" xmlns="http://www.springframework.org/schema/security">
-	  <intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-    <intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-    <intercept-url pattern="/logout" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+	  	<intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+      	<intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+      	<intercept-url pattern="/logout" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/oauth/check_token" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/oauth/**" access="ROLE_USER" />
 		<intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -133,6 +146,9 @@
 			</sec:user-service>
 		</sec:authentication-provider>
     </sec:authentication-manager>
+    
+    <!-- Empty authentication manager -->
+    <authentication-manager id="emptyAuthenticationManager" xmlns="http://www.springframework.org/schema/security" />
 	
 	<bean id="clientDetailsUserService" class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
 		<constructor-arg ref="clientDetails" />
