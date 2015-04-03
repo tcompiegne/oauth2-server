@@ -145,3 +145,37 @@ Response Body   ::
 				    "client_id": "test"
 				}
 </pre>
+
+OpenID User Info Endpoint
+===================================
+
+An OAuth2 protected resource and an OpenID Connect endpoint. Given an appropriate access_token, returns information about a user.
+
+<pre>
+
+Request	        GET /userinfo/check_token
+Request Headers Authorization: Bearer <acces_token>
+
+Response Codes  200 OK
+Response Body   ::
+               {
+				    "password": null,
+				    "username": "userTest",
+				    "authorities": [
+				        {
+				            "authority": "ROLE_USER"
+				        }
+				    ],
+				    "accountNonExpired": true,
+				    "accountNonLocked": true,
+				    "credentialsNonExpired": true,
+				    "enabled": true
+				}
+</pre>
+
+
+Thanks
+===================================
+
+Many thanks to the Spring Team and particularly Dave Syer for their job to make easy to understand and set up oauth2 infrastructure. 
+
