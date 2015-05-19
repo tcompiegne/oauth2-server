@@ -1,7 +1,7 @@
 # oauth2-server
 OAuth2 Authorization Server based on Spring Security OAuth2
 
-This is the basic Authorization server based on Spring Security OAuth2.
+This is a basic Authorization server based on Spring Security OAuth2.
 
 The main goal is to show you how to implement an Authorization Server with Spring Security OAuth2.
 
